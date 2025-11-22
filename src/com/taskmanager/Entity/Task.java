@@ -1,9 +1,6 @@
 package com.taskmanager.Entity;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -56,6 +53,66 @@ public class Task {
         );
     }
 
+    public static void writeFile(String data) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(data))) {
+            writer.write(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //This method is going to be a step for read, create, delete and update;
+    /*public static String readFile() {
+        File file = new File("data.json");
+
+        if (!file.exists()) {
+            System.out.println("No file found, starting fresh.");
+            return "";
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+
+            // Read entire file into 1 string
+            StringBuilder content = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+
+            return content.toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }*/
+
+    public static String readFile() {
+        String fileName = "data.json";
+        File file = new File(fileName);
+        if (!file.exists()) {
+            return "[]";
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "[]";
+        }
+    }
+
+
+
     public static int loadLastId() {
         File file = new File("data.json");
 
@@ -73,7 +130,6 @@ public class Task {
             while ((line = reader.readLine()) != null) {
                 content.append(line);
             }
-
             String json = content.toString();
 
             int lastId = 0;
@@ -172,4 +228,56 @@ public class Task {
 
         System.out.println("Your task was created: " + newTaskJson);
     }
+
+    public static void deleteTask(int idToDelete) {
+        String json = readFile();
+
+        // Remove spaces/newlines to simplify
+        json = json.replace("\n", "").replace("\r", "").trim();
+
+        // If file is empty or "[]"
+        if (json.equals("[]")) {
+            System.out.println("No tasks to delete.");
+            return;
+        }
+
+        // Locate the task with "id": X
+        String idString = "\"id\": " + idToDelete;
+        int idIndex = json.indexOf(idString);
+
+        if (idIndex == -1) {
+            System.out.println("Task not found.");
+            return;
+        }
+
+        // Find the object boundaries: { ... }
+        int objStart = json.lastIndexOf("{", idIndex);
+        int objEnd = json.indexOf("}", idIndex);
+
+        // Extract the full object text
+        String taskObject = json.substring(objStart, objEnd + 1);
+
+        // Remove the object, handle commas
+        String updated = json.replace(taskObject, "");
+
+        // Remove extra commas and fix array format
+        updated = updated.replace(", ,", ",");
+        updated = updated.replace("[,", "[");
+        updated = updated.replace(",]", "]");
+
+        // Trim double commas and spaces
+        updated = updated.replace(",,", ",").trim();
+
+        // Edge case: empty array
+        if (updated.equals("[]") || updated.equals("")) {
+            updated = "[]";
+        }
+
+        // Save back to file
+        writeFile(updated);
+
+        System.out.println("Task deleted successfully!");
+    }
+
+
 }

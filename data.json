@@ -16,30 +16,6 @@
 ,
 {
     "id": 3,
-    "description": "restart something",
-    "status": "todo",
-    "createdAt": "11-12-2025 15-09-55",
-    "updatedAt": ""
-}
-,
-{
-    "id": 4,
-    "description": "delete something",
-    "status": "todo",
-    "createdAt": "11-14-2025 15-56-23",
-    "updatedAt": ""
-}
-,
-{
-    "id": 5,
-    "description": "wash my clothes",
-    "status": "todo",
-    "createdAt": "11-14-2025 15-57-31",
-    "updatedAt": ""
-}
-,
-{
-    "id": 6,
     "description": "make the bed",
     "status": "todo",
     "createdAt": "11-14-2025 15-58-25",
